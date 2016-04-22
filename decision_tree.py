@@ -36,7 +36,7 @@ class TreeNode:
 
 class DecisionTree:
     
-    def __init__(self, min_samples_split=10, max_leaf_nodes=32768, n_leaf_clusters=5, n_random_trials=10, depth_background_val=8000, theta=100, tau=200):
+    def __init__(self, min_samples_split=10, max_leaf_nodes=32768, n_leaf_clusters=5, n_random_trials=10, depth_background_val=8.0, theta=100, tau=0.2):
         self._nodes = []
         self._n_leaves = 0
         self._min_samples_split = min_samples_split
@@ -119,12 +119,11 @@ class DecisionTree:
         return (samples / n_offsets_in_frame).astype(np.uint16), (samples % n_offsets_in_frame).astype(np.uint16)
     
     ## Train dicision tree for random tree walk algorithm. One tree correspond to one joint.
-    #  depthmaps is 3D array with shape [n_frames, rows, cols].
-    #  offset_points and direction_vectors are 3D array with shape [n_frames, n_offsets, n_dimensions=3]
-    #  @param depthmaps 3D array that contains 16-bit, single-channel depth maps
-    #  @param offset_points 3D array that contains random offset points from specific true joint positions
-    #  @param offset_points_projected 3D array that contains offset points projected on depth map plane.
-    #  @param direction_vectors 3D array that containes unit direction vectors from offset points to specific true joint positions
+    #  depthmaps is a 3D array with shape [n_frames, rows, cols].
+    #  offset_points_projected and direction_vectors are 3D array with shape [n_frames, n_offsets, n_dimensions=3]
+    #  @param depthmaps 3D array contains 16-bit, single-channel depth maps
+    #  @param offset_points_projected 3D array contains offset points projected on depth map plane.
+    #  @param direction_vectors 3D array containes unit direction vectors from offset points to true joint position
     def fit(self, depthmaps, offset_points_projected, direction_vectors):
         
         if len(depthmaps) != len(offset_points_projected):
@@ -285,6 +284,9 @@ class DecisionTree:
         # set tree attributes
         xml_tree.set('id', str(tree_id))
         xml_tree.set('n_nodes', str(len(self._nodes)))
+        
+        # TO DO: add n_leaves
+        # TO DO: add depth background val
         
         # iterating through nodes
         for node_id, node in enumerate(self._nodes):
@@ -474,7 +476,7 @@ class RandomTreeWalk(BaseEstimator):
             offsets_projected_fit = np.floor(offset_points_projected[:, joint, :, :] + 0.5).astype(np.int16)
             directions_fit = direction_vectors[:, joint, :, :]
             
-            # train tree for specified joint
+            # train tree for specific joint
             tree = DecisionTree(self.min_samples_split, self.max_leaf_nodes, self.n_leaf_clusters, self.n_random_trials, self.depth_background_val / 1000.0, self.theta, self.tau / 1000.0)
             tree.fit(depths_fit, offsets_projected_fit, directions_fit)
             
