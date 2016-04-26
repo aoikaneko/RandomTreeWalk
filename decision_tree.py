@@ -60,7 +60,7 @@ class DecisionTree:
         # store probabilities of random selection
         labels = leaf_clusters.labels_
         node.feature_probabilities = np.asarray([(labels == label).sum() / len(labels) for label in range(self._n_leaf_clusters)])
-        
+
         self._n_leaves += 1
         
         return self
@@ -196,7 +196,7 @@ class DecisionTree:
                 current_node_id += 1
                 continue
             
-            # add left and right node
+            # add left and right nodes
             left = TreeNode()
             right = TreeNode()
             
