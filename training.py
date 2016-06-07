@@ -82,7 +82,7 @@ def generateTrainingSet(depth_prefix, joints_prefix, frame_begin, frame_end, fra
             # project to depth plane
             offsets_projected = sensor.project_points3d(offsets)
             offsets_projected_adjacent = sensor.project_points3d(offsets_adjacent)
-                
+            
             # unit direction vectors from offset points to true joint position
             directions = normalize(joint - offsets)
             directions_adjacent = normalize(joint - offsets_adjacent)
